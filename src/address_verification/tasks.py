@@ -2,10 +2,10 @@ import json
 import logging
 import time
 
-from celery_template import app
-from celery_template.funcs import get_duration, exponential_backoff
-from celery_template.csv import read_csv
-from celery_template.psql import connect_postgres
+from address_verification import app
+from address_verification.funcs import get_duration, exponential_backoff
+from address_verification.csv import read_csv
+from address_verification.psql import connect_postgres
 from celery.app.log import TaskFormatter
 from celery.utils.log import get_task_logger
 from celery.result import AsyncResult

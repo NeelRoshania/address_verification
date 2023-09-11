@@ -1,9 +1,9 @@
 import pytest
 import logging
 
-from celery_template.csv import write_csv
-from celery_template.funcs import generate_test_data
-from celery_template.tasks import sort_list, sort_directory
+from address_verification.csv import write_csv
+from address_verification.funcs import generate_test_data
+from address_verification.tasks import sort_list, sort_directory
 
 # usage: 
 #   - pytest tests/scripts/test_sample.py

@@ -1,8 +1,8 @@
 import pytest
 import logging
 
-from celery_template import cparser
-from celery_template.psql import psql_connection
+from address_verification import cparser
+from address_verification.psql import psql_connection
 
 # usage: 
 #   - pytest tests/scripts/test_sample.py

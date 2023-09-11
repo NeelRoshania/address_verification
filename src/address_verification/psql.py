@@ -2,7 +2,7 @@ import psycopg2
 import logging
 from psycopg2 import OperationalError
 
-from celery_template import cparser
+from address_verification import cparser
 
 LOGGER = logging.getLogger(__name__) # this calls the celery_template.funcs logger - which logs to worker node instance
 

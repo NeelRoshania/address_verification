@@ -8,7 +8,7 @@ from snowflake.sqlalchemy import URL
 from snowflake.connector.pandas_tools import pd_writer
 from snowflake.connector import SnowflakeConnection
 
-from celery_template import logger
+from address_verification import logger
 
 def _get_sf_options() -> dict:
     return {

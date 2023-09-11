@@ -1,5 +1,5 @@
-# celery-template
-A template to manage workflows using a distributed task queue system
+# address_verification
+A project to support address verification and normalization
 
 Features
 - TBD

@@ -4,8 +4,8 @@ import math
 import os
 import random
 
-from celery_template.csv import write_csv
-from celery_template.psql import psql_connection
+from address_verification.csv import write_csv
+from address_verification.psql import psql_connection
 
 LOGGER = logging.getLogger(__name__) # this calls the celery_template.funcs logger - which logs to worker node instance
 

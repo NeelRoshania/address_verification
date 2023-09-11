@@ -5,10 +5,10 @@ import random
 import uuid
 
 from datetime import datetime
-from celery_template import app
-from celery_template.funcs import generate_test_data
-from celery_template.tasks import failed_task, await_tasks_completion, hello_world
-from celery_template.csv import read_csv, write_csv
+from address_verification import app
+from address_verification.funcs import generate_test_data
+from address_verification.tasks import failed_task, await_tasks_completion, hello_world
+from address_verification.csv import read_csv, write_csv
 from kombu.exceptions import OperationalError
 from multiprocessing.dummy import Pool
 

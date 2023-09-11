@@ -1,6 +1,6 @@
 import boto3
 
-from celery_template import logger
+from address_verification import logger
 
 """
 Notes
