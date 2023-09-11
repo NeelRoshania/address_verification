@@ -1,0 +1,6 @@
+# use this template to ssh without exposing connection details
+
+Host host(username)
+	Hostname IP_ADDRESS
+	IdentityFile .ssh/pk.pem
+

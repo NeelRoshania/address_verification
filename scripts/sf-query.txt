@@ -1,0 +1,3 @@
+    select *
+       from TEST_WDOD_PARSE_LOCATION_RAW
+;

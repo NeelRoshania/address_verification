@@ -1,0 +1,46 @@
+screen
+
+Screen or GNU Screen is a terminal multiplexer. In other words, it means that you can start a screen session and thenopen any number of windows (virtual terminals) inside that session. Processes running in Screen will continue to run when their window is not visible even if you get disconnected.
+
+Definitions
+
+- Attached vs Detached
+	- If you want log out of ocean, or close down your computer, but still keep the terminal session running, you have to detach it. This is different then exiting screen. 
+	- If you exit screen, by typing exit, you lose that session. 
+
+Basic usage
+	- check if you're in a screen session: echo $STY
+	- check existing screen sessions: screen -ls
+
+	- start a screen session: screen -S session_name
+
+	- switch to another screen
+		- find screen id with screen -ls
+		- screen -rd session_id
+  
+	- detach screen: screen -d session_id
+	- attach screen: screen -r session_id
+
+	- kill a session: screen -S session_id -X quit
+		- if session_id is the current screen, it'll terminate out of screen
+		- OR exit to kill current screen
+		
+		- kills desktop screen session id when screen was initiated
+ 
+Basic commands
+	- starting a named session: screen -S session_name
+	- Ctrl+a c Create a new window (with shell).
+	- Ctrl+a " List all windows.
+	- Ctrl+a 0 Switch to window 0 (by number).
+	- Ctrl+a A Rename the current window.
+	- Ctrl+a S Split current region horizontally into two regions.
+	- Ctrl+a | Split current region vertically into two regions.
+	- Ctrl+a tab Switch the input focus to the next region.
+	- Ctrl+a Ctrl+a Toggle between the current and previous windows
+	- Ctrl+a Q Close all regions but the current one.
+	- Ctrl+a X Close the current region.
+	- Ctrl-a Ctrl-D Detach you from the screen session which you can later resume by doing screen -r
+
+References
+	- https://linuxize.com/post/how-to-use-linux-screen/
+	- https://linux.die.net/man/1/screen

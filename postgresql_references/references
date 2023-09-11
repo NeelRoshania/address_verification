@@ -1,0 +1,47 @@
+About
+	- PostgreSQL is an open source object-relational database system with over 35 years of active development that has earned it a strong reputation for reliability, feature robustness, and performance.
+	
+Installation procedures
+	- run setup.sh
+	- test installation
+		- sudo -u postgres psql
+		- The only user who can connect to a fresh install is the postgres user
+  	- switch to user postgres and database postgres
+		- postgres: sudo -u postgres psql postgres (probably looks for user in less etc/passwd
+		- new roles: psql -U developer mydb
+	- define roles and privaleges
+		- user postgres is the default superuser, select * from pg_roles;
+		- [required] - create a user that is not a super user for development, not a good idea to log in as a root user
+		- [optional] - create a database of the current linux user to run psql without specifying database name
+
+usage
+	- connect to database; psql mydb
+	- connect to database from user; psql -U posgres -W
+	- run script in psql; \i script.sql
+	- help -> all psql commands
+	- information schema
+		- https://dba.stackexchange.com/questions/22362/list-all-columns-for-a-specified-table
+	- restart server, sudo service postgresql restart 
+
+Connections and authentication 
+ 	- get hosts are allowed to connect, how clients are authenticated, which PostgreSQL user names they can use,
+    		- sudo vim etc/postgresql/15/main/pg_hba.conf
+ 	- configuration set on server startup (including connections and authentication)
+    		- vim etc/postgresql/15/main/postgresql.conf
+
+Troubleshooting
+
+ psql: could not connect to server: No such file or directory
+ Is the server running locally and accepting
+ connections on Unix domain socket "/tmp/.s.PGSQL.5432"?
+ 
+	- sudo service postgresql restart 
+	
+	
+References
+	- download instructions
+		- https://www.postgresql.org/download/linux/ubuntu/
+		- https://help.ubuntu.com/community/PostgreSQL
+	- tutorials
+		- https://www.postgresql.org/docs/online-resources/
+		- https://help.ubuntu.com/community/PostgreSQL

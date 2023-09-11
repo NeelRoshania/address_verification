@@ -1,0 +1,32 @@
+usefull aws commands
+
+- create key: aws ec2 create-key-pair --key-name my-key-par --key-type rsa --key-format pem --query "KeyMaterial" --output text > my-key-pir.pem
+- ssh: ssh -i /path/key-pair-name.pem instance-user-name@instance-public-dns-name
+- get instance networking details: aws ec2 describe-instances --instance-id i-0c1405dd6083ba154 --output text
+- get instance fingerprint: aws ec2 get-console-output --instance-id instance_id --output text
+- create key pair: aws ec2 create-key-pair --key-name my-key-pair --key-type rsa --key-format pem --query "KeyMaterial" --output text > my-key-pair.pem THEN chmod 400 my-key-pair.pem
+- Note about ssh into sudo user
+	- You typically shouldn't have the sudo's pk credentials.
+	- Neel, that includes you.
+	- Delete the PK when you're done with it. Recreate it if you have to.
+
+SSH MANAGEMENT
+- manage ssh password authentication 
+	- set PasswordAuthentication no to disble password authenticaion on ssh
+	- usefull to limit ssh connections to public keys only (see PubkeyAuthentication)
+
+	sudo vim /etc/ssh/sshd_config
+	sudo service ssh restart
+
+- ssh-agent (needed to clone git repositories using ssh)
+
+	documentation
+		- https://man.openbsd.org/ssh-keygen.1
+
+	generated keypair: ssh-keygen -t <dsa encryption_algo> -C "<email_address>"
+	view agents: ssh-agent -s
+	start agent: eval `ssh-agent`
+	add keypair to agent: ssh-add .ssh/<private_key>
+	delete all identities: ssh-add -D
+	list identities: ssh-add -l
+

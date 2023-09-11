@@ -1,0 +1,26 @@
+Updating current version of pyton on linux
+
+Resources
+	- https://phoenixnap.com/kb/upgrade-python#ftoc-heading-7
+
+Command sequence:
+  184  python3 # check current version of python
+  350  sudo apt install python3.9
+  351  python3.9 # check that binary runs
+  368  python3 --version # python symlink should still point to previous version
+  370  sudo update-alternatives --config python3 # check current list of symlink alternatives
+  373  sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 1 # install first alternative
+  374  sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9 2 # install second alternative
+  375  sudo update-alternatives --config python3 # check updated list of symlink alternatives
+  384  sudo rm /usr/bin/python3 # didn't need this - discard old version of python symlink?
+  385  sudo ln -s python3.9 /usr/bin/python3 # replace current symlink with new one
+  386  python3 --version # check default version
+  
+Reinstall pip:
+  408  sudo apt install python3.9-venv
+  409  python3 -m venv .env
+
+Installing python
+	- sudo apt-get install python3.9
+	- sudo apt-get install python3.10-venv
+

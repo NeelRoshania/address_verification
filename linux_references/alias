@@ -1,0 +1,7 @@
+Using linux aliases!
+
+	- An alias is a shortcut to reference a command, https://linuxhandbook.com/linux-alias-command/
+
+	- Use cases
+		- alias ucmerced='source ~/git/git/ucmerced_housing/.env/bin/activate' aliasing a virtual environment, 
+		- unalias alias-name: unaliase a reference, https://askubuntu.com/questions/325368/how-do-i-remove-an-alias
