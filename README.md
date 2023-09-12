@@ -21,9 +21,10 @@ If you interact with a distributed queuing system, all tasks will take the same 
 **Module setup**
 1. `python3 -m venv .env` and `pip3 install --upgrade pip` 
 2. `cd .env/scripts ` then `activate`
-3. Modify `setup.cfg` and `src`
+3. Modify `src/setup.cfg` - change project name
 4. `pip3 install -e .`
-5. Setup desired broker and backend 
+5. Change `qualname` in `conf/logger.conf`
+6. Setup desired broker and backend 
 	- broker:`sudo apt-get install rabbitmq-server` then `sudo service rabbitmq-server restart`
 	- backend: See PostgreSQL backend database setup
 
