@@ -9,6 +9,17 @@ from address_verification.psql import psql_connection
 
 LOGGER = logging.getLogger(__name__) # this calls the celery_template.funcs logger - which logs to worker node instance
 
+def specific_func(text:str) -> None:
+
+    """
+        Service to....
+
+    """
+
+    LOGGER.info(f'{text}')
+
+    return None
+
 def get_duration(start_time, end_time) -> float:
 
     """

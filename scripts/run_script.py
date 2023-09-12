@@ -2,7 +2,7 @@ import argparse
 import logging
 import logging.config
 
-# from address_verification.funcs import specific_func
+from address_verification.funcs import specific_func
 
 logging.config.fileConfig('conf/logging.conf', disable_existing_loggers=False, defaults={'fileHandlerLog': f'logs/{__name__}.log'})
 LOGGER = logging.getLogger(__name__) # this will call the logger __main__ which will log to that referenced in python_template.__init__
@@ -23,6 +23,6 @@ if __name__ == "__main__":
     parser.add_argument("--optional", "-o", action="store", type=str, default=8000)
     args = parser.parse_args()
 
-    # main(args)
+    main(args)
     main_2(args)
 
