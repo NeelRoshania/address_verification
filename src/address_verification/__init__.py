@@ -3,6 +3,7 @@ import logging
 
 from celery import Celery
 from kombu import Queue, Exchange
+from geopy.geocoders import Nominatim
 
 # setup
 LOGGER = logging.getLogger(__name__)
@@ -27,3 +28,6 @@ LOGGER.info(f'celery-instance:{app} - celery app instantiated')
 
 # set app configuration
 app.config_from_object(CeleryConfig)
+
+# geolocator instance
+geolocator = Nominatim(user_agent="address_verification")

@@ -6,8 +6,7 @@ import uuid
 
 from datetime import datetime
 from address_verification import app
-from address_verification.funcs import generate_test_data
-from address_verification.tasks import failed_task, await_tasks_completion, hello_world
+from address_verification.tasks import geopy_verify_address, await_tasks_completion
 from address_verification.csv import read_csv, write_csv
 from kombu.exceptions import OperationalError
 from multiprocessing.dummy import Pool
@@ -43,7 +42,7 @@ def retry_tasks(job_id: str) -> None:
             tasks.append(
                 [
                     datetime.utcnow().isoformat(),
-                    failed_task.apply_async(args=[random.random()], queue='address_verification_queue').id
+                    geopy_verify_address.apply_async(args=[random.random()], queue='address_verification_queue').id
                 ]
             )
             # break
@@ -84,9 +83,9 @@ if __name__ == "__main__":
     parser.add_argument("--optional", "-o", action="store", type=str, default=8000)
     args = parser.parse_args()
 
-    data_dir = r'tests/data'
+    data_dir = r'data/addresses.csv'
 
-    # submit 3 jobs of 10 tasks per job
+    # submit 3 jobs of 10 tasks per job - nned to figure out how to handle this, maybe chunk the records for verification
     jobs = [str(uuid.uuid1()) for i in range(3)]
     for jobid in jobs:
         job_handler(jobid)

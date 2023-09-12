@@ -2,7 +2,7 @@ import json
 import logging
 import time
 
-from address_verification import app
+from address_verification import app, geolocator
 from address_verification.funcs import get_duration, exponential_backoff
 from address_verification.csv import read_csv
 from address_verification.psql import connect_postgres
@@ -12,6 +12,7 @@ from celery.result import AsyncResult
 from celery.signals import task_success, task_retry, after_setup_task_logger
 from kombu.exceptions import OperationalError
 from multiprocessing.dummy import Pool
+from geopy.exc import GeocoderTimedOut
 
 """
     References
@@ -63,14 +64,13 @@ def retry_feedback(sender=None, request=None, reason=None, einfo=None, **kwargs)
     LOGGER.info(f'task retrying - {reason})')
     return None
 
-
 # tasks
 
 @app.task(bind=True)
-def failed_task(self, prob: int) -> dict:
+def geopy_verify_address(self, address: str) -> dict:
 
     """
-        A task that fails with arbitrary retry logic
+        A geopy address verification task that can fail due to a timeout
 
     """
     start_time = time.time()
@@ -78,22 +78,19 @@ def failed_task(self, prob: int) -> dict:
     # LOGGER.info(f'task.request:{dir(self.request)} - args=({x}, {y})')
 
     try:
-
-        if prob > 0.8:
-            LOGGER.info(f'no fail')
-            end_time = time.time()
-            return {
-                "task_description": 'failed_task',
-                "completed": True,
-                "duration": get_duration(start_time=start_time, end_time=end_time),
-                "result": prob
-            }
-        else:
-            raise ZeroDivisionError('divide by zero not alowed - float division by zero') # raise a know exception
-    
-    except ZeroDivisionError as e:
         
-        LOGGER.error(f'task failed - handling known exception ZeroDivisionError')
+        res = geolocator.geocode(address)
+        end_time = time.time()
+        return {
+            "task_description": 'geopy_verify_address',
+            "completed": True,
+            "duration": get_duration(start_time=start_time, end_time=end_time),
+            "result": res
+        }
+        
+    except GeocoderTimedOut as e:
+        
+        LOGGER.error(f'task failed - geopy service timed out')
 
         # If retried, will run the task with the intially supplied arguments unless..
         raise self.retry(
@@ -104,116 +101,6 @@ def failed_task(self, prob: int) -> dict:
             # retry_backoff_max=6*50,
             exc=e
         )
-
-@app.task(bind=True)
-def sort_list(self, fpath: str) -> dict:
-
-    """
-        task is packaged to perform bubble_sort 
-
-    """
-    def bubble_sort(arr: list) -> list:
-        
-        """
-            bubble sort implementation
-                - https://www.programiz.com/dsa/bubble-sort
-        """ 
-
-        # loop to access each array element
-        if isinstance(arr, list):
-
-            for i in range(len(arr)):
-
-                # loop to compare array elements
-                for j in range(0, len(arr) - i - 1):
-
-                    # compare two adjacent elements - change > to < to sort in descending order
-                    if arr[j] > arr[j + 1]:
-
-                        # swapping elements if elements are not in the intended order
-                        temp = arr[j]
-                        arr[j] = arr[j+1]
-                        arr[j+1] = temp
-            
-            return arr
-        else:
-            raise TypeError(f'argument of type {type(arr)} must be {type([])}: {arr}')
-    
-    """
-        Sort one list object 
-    """
-
-    start_time = time.time()
-    lsorted = []
-    headers, *data = read_csv(file_loc=fpath)
-    LOGGER.info(f'sorting data in: {fpath}')
-
-    for row in data:
-        l = json.loads(row[1])
-        lsorted.append([
-                        row[0],
-                        bubble_sort(l)
-                    ]
-        )
-    end_time = time.time()
-
-    # exposing data to an object in memory is not recommended
-    return {
-        "task_description": 'single-sort',
-        "completed": True,
-        "duration": get_duration(start_time=start_time, end_time=end_time),
-        "result": lsorted
-        # "result": memoryview(array.array('l', lsorted)), # celery can't pickle this
-    }
-
-# this is a bad practice - chain tasks together using thier signatures - https://docs.celeryq.dev/en/stable/userguide/tasks.html#task-synchronous-subtasks
-@app.task(bind=True)
-def sort_directory(self, fpaths: list) -> None:
-
-    """
-        Sort data across many files
-            - arguably redudent, 
-                - but required to showcase that tasks should call references to the most recent verison of data objects
-                - in this case, a path to a file on disk
-
-    """
-
-    start_time = time.time()
-    fsorted = []
-    
-    for path in enumerate(fpaths):
-        fsorted.append([
-            path[1],
-            sort_list(fpath=path[1])["result"]
-            # sort_list(fpath=path[1])
-            ]
-        )
-    end_time = time.time()
-
-    return {
-        "task_description": 'sort-directory',
-        "completed": True,
-        "duration": get_duration(start_time=start_time, end_time=end_time),
-        "result": fsorted
-        # "result": memoryview(array.array('l', fsorted)), # celery cannot pickle this
-    }
-
-@app.task(bind=True)
-def add(self, x, y):
-
-    """
-        A very simple task
-
-    """
-    start_time = time.time()
-    LOGGER.info(f'task.request:{dir(self.request)} - args=({x}, {y})')
-    end_time = time.time()
-    return {
-        "task_description": 'add',
-        "completed": True,
-        "duration": get_duration(start_time=start_time, end_time=end_time),
-        "result": x+y
-    }
 
 # non-tasks
 
@@ -284,29 +171,3 @@ def await_tasks_completion(taskids: list) -> None:
 
     LOGGER.info(f'all tasks complete')
     return res
-
-def hello_world(fpath: str, fpaths: str) -> None:
-
-    """
-        Submitting predefined tasks
-
-            # sequential tasks
-            data_files = generate_test_data(data_dir=data_dir)
-            hello_world(fpath=data_files[0], fpaths=data_files)
-    """
-
-    LOGGER.info('starting tasks')
-
-    # catch operational errors - perhaps cannot send message to worker
-    try:
-
-        # celery tasks expect serialized arguments, not objects - https://docs.celeryq.dev/en/stable/userguide/calling.html#serializers
-        t1 = add.apply_async(args=[5, 7], queue='celery_template_queue')
-        t2 = sort_list.apply_async(args=[fpath], queue='celery_template_queue')
-        t3 = sort_directory.apply_async(args=[fpaths], queue='celery_template_queue')
-
-        # [develop] save results once complete
-        LOGGER.info(f'tasks submitted')
-
-    except OperationalError as e: 
-        LOGGER.error(f'app:{app} - failed to execute tasks - {e}')
