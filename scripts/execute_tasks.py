@@ -43,7 +43,7 @@ def retry_tasks(job_id: str) -> None:
             tasks.append(
                 [
                     datetime.utcnow().isoformat(),
-                    failed_task.apply_async(args=[random.random()], queue='celery_template_queue').id
+                    failed_task.apply_async(args=[random.random()], queue='address_verification_queue').id
                 ]
             )
             # break

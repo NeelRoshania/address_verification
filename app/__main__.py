@@ -17,10 +17,10 @@ if __name__ == "__main__":
                         [
                             "celery",
                             "-A",
-                            "celery_template",
+                            "address_verification",
                             "worker",
                             "-Q",
-                            "celery_template_queue",
+                            "address_verification_queue",
                             "--loglevel=INFO",
                             # "--logfile=logs/celery.log"
                         ]
