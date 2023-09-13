@@ -94,7 +94,7 @@ def geopy_verify_address(self, address: str) -> dict:
 
         # If retried, will run the task with the intially supplied arguments unless..
         raise self.retry(
-            countdown=exponential_backoff(2, self.request.retries), # custom back-off
+            countdown=exponential_backoff(5, self.request.retries), # custom back-off
             max_retries=3,
             # retry_backoff=30,
             # retry_jitter=False,
