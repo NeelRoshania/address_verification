@@ -111,38 +111,6 @@ def fetch_task_result(taskid: str) -> tuple:
     else:
         return taskid, _res.state,
 
-def fetch_backend_taskresult(taskid: str) -> tuple:
-
-    """
-        Fetch task_id result
-            - result needs to be deserialized
-                result = pickle.loads(fetch_backend_taskresult({task_id})[0][0])
-    """
-    LOGGER.info(f'querying task: {taskid}')
-
-    # connect to psql
-    conn_response = connect_postgres()
-    
-    if conn_response["connection-status"]:
-
-        # Creating a cursor object using the cursor() method
-        conn = conn_response['conn']
-        cursor = conn.cursor()
-
-        # Executing an MYSQL function using the execute() method
-        cursor.execute(f'select result from celery_taskmeta where task_id = \'{taskid}\' limit 10;')
-
-        # Fetch a single row using fetchone() method.
-        data = cursor.fetchall()
-        LOGGER.info(f'data: {data}, type: {type(data)}, len: {len(data)}')
-
-        # Closing the connection
-        conn.close()
-        return data
-    else:
-        LOGGER.info(f'connection failed: {conn_response}')
-        raise Exception(f'Failed to pass test - {conn_response}')
-
 def fetch_task_results(task_ids: list[str]) -> list:
 
     """
@@ -166,7 +134,7 @@ def await_tasks_completion(taskids: list) -> None:
     
     while True:
         res = fetch_task_results(taskids) 
-        if len([r[0] for r in res if r[1] == 'RETRY']) == 0:
+        if len([r[0] for r in res if r[1] in ('RETRY', 'PENDING')]) == 0:
             break
 
     LOGGER.info(f'all tasks complete')
