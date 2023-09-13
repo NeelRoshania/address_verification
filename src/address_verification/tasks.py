@@ -12,6 +12,7 @@ from celery.signals import task_success, task_retry, after_setup_task_logger
 from kombu.exceptions import OperationalError
 from multiprocessing.dummy import Pool
 from geopy.exc import GeocoderTimedOut
+from geopy.location import Location
 
 """
     References
@@ -84,7 +85,7 @@ def geopy_verify_address(self, address: str) -> dict:
             "task_description": 'geopy_verify_address',
             "completed": True,
             "duration": get_duration(start_time=start_time, end_time=end_time),
-            "result": res
+            "result": (res.raw['place_id'], res.raw['osm_id'], res.raw['osm_type'], res.address) if isinstance(res, Location) else None
         }
         
     except GeocoderTimedOut as e:
