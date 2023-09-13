@@ -4,7 +4,6 @@ import time
 
 from address_verification import app, geolocator
 from address_verification.funcs import get_duration, exponential_backoff
-from address_verification.csv import read_csv
 from address_verification.psql import connect_postgres
 from celery.app.log import TaskFormatter
 from celery.utils.log import get_task_logger

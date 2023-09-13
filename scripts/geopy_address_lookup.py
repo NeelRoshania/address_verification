@@ -25,7 +25,7 @@ logging.config.fileConfig('conf/logging.conf', defaults={'fileHandlerLog': f'log
 
 LOGGER = logging.getLogger(__name__) # this will call the logger __main__ which will log to that referenced in python_template.__init__
 
-def retry_tasks(job_id: str, guests: list) -> None:
+def retry_tasks(job_id: str, address_data: list) -> None:
 
     """
         Submitting predefined tasks with retry logic if failed
@@ -42,7 +42,7 @@ def retry_tasks(job_id: str, guests: list) -> None:
                 tasks.append(
                 [
                     datetime.utcnow().isoformat(),
-                    geopy_verify_address.apply_async(args=[next(guests)[11]], queue='address_verification_queue').id
+                    geopy_verify_address.apply_async(args=[next(address_data)[11]], queue='address_verification_queue').id
                 ]
             )
             except StopIteration as e:
@@ -65,7 +65,7 @@ def job_handler(job_id: str, data: list) -> tuple:
         LOGGER.info(f'{job_id} - starting job')
         
         # submit tasks
-        tasks_submitted = retry_tasks(job_id=job_id, guests=data)
+        tasks_submitted = retry_tasks(job_id=job_id, address_data=data)
         taskids = [task[1] for task in tasks_submitted]
         write_csv(file_loc=f'data/results/jobs/submitted/{job_id}.csv', data=list(tasks_submitted)) # [date_started, task_id]
         
@@ -81,10 +81,10 @@ if __name__ == "__main__":
     # parse arguments
     parser = argparse.ArgumentParser()
     parser.add_argument("config", type=str, action="store", default="conf/config.yaml", nargs="?")
-    parser.add_argument("--optional", "-o", action="store", type=str, default=8000)
+    parser.add_argument('addresses', type=str, action="store", help='csv file of addresses for geopy_verification')
     args = parser.parse_args()
 
-    data_dir = r'data/addresses.csv'
+    data_dir = args.addresses
     d = (r for r in read_csv(data_dir)[1::])
     d_headers = read_csv(data_dir)[0]
 

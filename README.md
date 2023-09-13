@@ -35,7 +35,7 @@ If you run into issues with `psycopg2`, consider the following;
 
 Starting a celery service
 - `app`: `python3 -m app` as a seperate screen
-- celery `flower`: `celery -A celery_template flower --port=5566 --loglevel=INFO` as start task monitoring instance as a seperate screen
+- celery `flower`: `celery -A address_verification flower --port=5566 --loglevel=INFO` as start task monitoring instance as a seperate screen
 
 Submitting tasks
 - Define [celery configurations](https://github.com/NeelRoshania/celery_template/blob/main/src/celery_template/__init__.py#L14)
