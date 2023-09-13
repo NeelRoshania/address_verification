@@ -11,7 +11,7 @@ from celery.result import AsyncResult
 from celery.signals import task_success, task_retry, after_setup_task_logger
 from kombu.exceptions import OperationalError
 from multiprocessing.dummy import Pool
-from geopy.exc import GeocoderTimedOut, GeocoderUnavailable
+from geopy.exc import GeocoderTimedOut, GeocoderUnavailable, GeocoderRateLimited
 from geopy.location import Location
 
 """
@@ -88,7 +88,7 @@ def geopy_verify_address(self, address: str) -> dict:
             "result": (res.raw['place_id'], res.raw['osm_id'], res.raw['osm_type'], res.address) if isinstance(res, Location) else None
         }
         
-    except (GeocoderTimedOut, GeocoderUnavailable) as e:
+    except (GeocoderTimedOut, GeocoderUnavailable, GeocoderRateLimited) as e:
         
         LOGGER.error(f'task failed - geopy service timed out')
 
