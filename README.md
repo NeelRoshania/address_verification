@@ -1,9 +1,9 @@
 # address_verification
-A project to support address verification and normalization
+A project to support address verification and normalization.
 
 Features
-- geopy integration to validate supplied addresses
-- celery task queue integration to cadence validation requests
+- geopy integration to validate supplied addresses.
+- celery task queue integration to cadence validation requests.
 
 ### Installation guide
 
