@@ -1,20 +1,9 @@
 # address_verification
-A project to support address verification and normalization
+A project to support address verification and normalization.
 
 Features
-- TBD
-
-### Use cases
-- TBD
-
-### Celery basics
-Let's say you have three tasks; `add`, `sort_list`, `sort_lists`
-- `add` takes completes < 0s
-- `sort_list` completes ~1.5s
-- `sort_directory` completes ~16s
-
-If you perform each sequentially, all tasks will complete in ~19s.
-If you interact with a distributed queuing system, all tasks will take the same time, but a response is returned in < 1s.
+- geopy integration to validate supplied addresses.
+- celery task queue integration to cadence validation requests.
 
 ### Installation guide
 
@@ -27,15 +16,22 @@ If you interact with a distributed queuing system, all tasks will take the same 
 6. Setup desired broker and backend 
 	- broker:`sudo apt-get install rabbitmq-server` then `sudo service rabbitmq-server restart`
 	- backend: See PostgreSQL backend database setup
-
-If you run into issues with `psycopg2`, consider the following;
-1. `sudo chmod 774 psycopg2_setup.sh`
-2. `./psycopg2_setup.sh`
-3. `pip3 install psycopg2`
+7. Create a postgresql `celery_user` with `celery_pass` and `celery_db`
+   	- log into `celery_db` with a privileged user.
+    		- `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO celery_user;`
+   		- `GRANT USAGE, SELECT ON SEQUENCE task_id_sequence TO celery_user;`
+   		- `GRANT USAGE, SELECT ON SEQUENCE taskset_id_sequence TO celery_user;`
+8. Ensure database configuration, task modules, and app task queues are defined correctly. See,
+	- `src/celery_template/__init__.py`
+	- `app/__main__.py`
+10. Run psql connect and select tests
+	- `pytest -v tests/scripts/test_psqlconnect.py`
+	- `pytest -v tests/scripts/test_psqlselect.py`
+11. Refer to Task Queue Setup for task submission testing. 
 
 Starting a celery service
 - `app`: `python3 -m app` as a seperate screen
-- celery `flower`: `celery -A celery_template flower --port=5566 --loglevel=INFO` as start task monitoring instance as a seperate screen
+- celery `flower`: `celery -A address_verification flower --port=5566 --loglevel=INFO` as start task monitoring instance as a seperate screen
 
 Submitting tasks
 - Define [celery configurations](https://github.com/NeelRoshania/celery_template/blob/main/src/celery_template/__init__.py#L14)
